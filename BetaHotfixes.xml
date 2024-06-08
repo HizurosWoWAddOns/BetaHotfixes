@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<!-- localizations -->
+	<Script file="localization.lua"/>
+
+	<!-- core -->
+	<Script file="BetaHotfixes.lua"/>
+	<Script file="BetaHotfixes_DataBroker.lua"/>
+	<Script file="BetaHotfixes_Options.lua"/>
+
+	<!-- modules -->
+	<!--Script file="modules\bugreporter.lua"/-->
+	<!--Script file="modules\chatwindow.lua"/-->
+	<Script file="modules\worldmap.lua"/>
+	<Script file="modules\worldmap-data.lua"/>
+	<Include file="modules\devtools.xml"/>
+	<Script file="modules\languages.lua"/>
+	<!--Script file="modules\guild.lua"/-->
+
+</Ui>
