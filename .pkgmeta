@@ -27,7 +27,7 @@ externals:
 
 
 enable-nolib-creation: no
-enable-toc-creation: yes
+enable-toc-creation: no
 
 ignore:
     - libs/LibStub/tests
