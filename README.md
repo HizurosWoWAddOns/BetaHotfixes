@@ -10,7 +10,7 @@
 
 ## Description
 Temporary fix for some problems with the user interface in the current WoW Beta.\
-The main reason for this addon was the lack of textures for world maps in non -English. The hell of the green world map.
+The main reason for this addon was the lack of textures for world maps if wow beta is set to another language. The hell of the green world map.
 
 ## Bug reports, feature requests and Support
 Please use the [Issues page](https://github.com/HizurosWoWAddOns/BetaHotfixes/issues) for bug reports and feature requests.
