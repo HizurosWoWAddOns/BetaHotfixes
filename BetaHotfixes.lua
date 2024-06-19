@@ -70,10 +70,9 @@ frame:SetScript("OnEvent",function(self,event,...)
 		end
 	elseif event=="PLAYER_LOGIN" then
 		for modName,modData in pairs(ns.modules) do
-			if modData.on_toggle and modData.options and modData.defaults then
-				for k,v in pairs(modData.defaults)do
-					modData.on_toggle(k);
-				end
+			print(modName)
+			if modData[event] then
+				modData[event]()
 			end
 		end
 	end

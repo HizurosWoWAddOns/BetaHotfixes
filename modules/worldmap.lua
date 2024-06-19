@@ -10,7 +10,7 @@ local replaceTextures,replaceTaxiNodes = {},{};
 
 local C_Map_GetMapArtLayerTextures_Orig = C_Map.GetMapArtLayerTextures;
 local function C_Map_GetMapArtLayerTextures_Replacement(mapID,layerIndex)
-	if BetaHotfixDB["greentexture-uiMapId-"..mapID] then
+	if BetaHotfixDB.modules[modName]["greentexture-uiMapId-"..mapID] then
 		local data = ns.WorldMapData(mapID,layerIndex);
 		ns.print("hooked","C_Map.GetMapArtLayerTextures",mapID,layerIndex,data);
 		if data then
@@ -91,30 +91,24 @@ end
 --C_TaxiMap.GetTaxiNodesForMap = C_TaxiMap_GetTaxiNodesForMap_Replacement
 
 local function opt(info,value)
-	local modName = info[#info];
+	local key = info[#info];
 	if value~=nil then
-		BetaHotfixDB.worldmap[modName] = value;
+		BetaHotfixDB.modules[modName][key] = value;
 		return;
 	end
-	return BetaHotfixDB.worldmap[modName];
+	return BetaHotfixDB.modules[modName][key];
 end
 
 local function flagIt(info)
 	local key = info[#info];
-	if key=="flagAll" then
-		local args = module.options.hotfix.worldmap.args
-		ns.debug(key)
-		for k in pairs(args)do
-			if k:match("greentexture-uiMapId-%d") then
-				print(k)
-			end
-		end
-	elseif key=="flagNone" then
-		ns.debug(key)
-		local args = module.options.hotfix.worldmap.args
-		for k in pairs(args)do
-			if k:match("greentexture-uiMapId-%d") then
-			end
+	if not (key=="flagAll" or key=="flagNone") then return end
+
+	local args = module.options.hotfix.worldmap.args
+	local state = key=="flagAll";
+
+	for k in pairs(args)do
+		if k:match("greentexture%-uiMapId%-%d") then
+			BetaHotfixDB.modules[modName][k] = state;
 		end
 	end
 end
@@ -136,14 +130,17 @@ module = {
 			worldmap = {
 				type="group", order=3, inline=true,
 				name=C(WORLD_MAP,"ffeedd00"),
+				get = opt,
+				set = opt,
+				func = flagIt,
 				args = {
 					info = {
 						type = "description", order = 0, fontSize="large",
 						name = L.WorldMapEmpty
 					},
-
-					flagAll = { type = "execute", name = ALL, order=1, func = flagIt, hidden = true },
-					flagNone = { type = "execute", name = NONE, order=2, func = flagIt, hidden = true },
+					flagAll = { type = "execute", name = ALL, order=1, hidden = true },
+					flagNone = { type = "execute", name = NONE, order=2, hidden = true },
+					line = { type = "header", name = "", order = 3},
 					-- filled by function
 				}
 			},
@@ -201,8 +198,8 @@ function module.on_addoptions()
 			count=count+1;
 		end
 		args.info.hidden = count~=0
-		--args.flagAll.hidden = count==0
-		--args.flagNone.hidden = count==0
+		args.flagAll.hidden = count==0
+		args.flagNone.hidden = count==0
 	else
 		module.options.hotfix.worldmap.disabled = true;
 	end
@@ -227,6 +224,19 @@ function module.on_addoptions()
 	--if ns.CountTaxiNodes()==0 then
 	--	module.options.hotfix.ferrymaster.disabled = true;
 	--end
+end
+
+function module.PLAYER_LOGIN()
+	if not BetaHotfixDB.modules[modName] then
+		BetaHotfixDB.modules[modName] = {}
+	end
+	for k,v in pairs(BetaHotfixDB)do
+		if tostring(k):match("%-uiMapId%-") then
+			print("wfboiknwtbowqntboqeinrgoiqnergoiqnergoiqnrgoinerqb")
+			BetaHotfixDB.modules[modName][k] = v;
+			BetaHotfixDB[k] = nil
+		end
+	end
 end
 
 function module.on_toggle(optName,showDisabled)
