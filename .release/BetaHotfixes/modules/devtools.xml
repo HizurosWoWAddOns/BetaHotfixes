@@ -1,0 +1,90 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="devtools.lua"/>
+
+	<Frame name="BetaHotfixes_MapControls" parent="WorldMapFrame" mixin="BetaHotfixes_MapControls_Mixin" inherits="BackdropTemplate" hidden="false">
+		<Size x="300" y="80" />
+
+		<Anchors>
+			<Anchor point="TOP" relativePoint="BOTTOM" />
+		</Anchors>
+
+		<Layers>
+
+			<Layer level="ARTWORK">
+				<FontString parentKey="num" inherits="GameFontNormal" justifyV="CENTER" text="0">
+					<Size x="90" />
+					<Anchors>
+						<Anchor point="TOP" y="-24"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+
+		</Layers>
+
+		<Frames>
+
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="8" y="5" />
+				</Anchors>
+			</Button>
+
+			<Button parentKey="PrevButton" inherits="UIMenuButtonStretchTemplate" text="prev">
+				<Size x="60" y="24" />
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.num" relativePoint="LEFT" x="-6" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():PrevMap();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button parentKey="NextButton" inherits="UIMenuButtonStretchTemplate" text="next">
+				<Size x="60" y="24" />
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.num" relativePoint="RIGHT" x="6" y="0" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():NextMap();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button parentKey="DumpMapButton" inherits="UIMenuButtonStretchTemplate" text="Map dump">
+				<Size x="120" y="24" />
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.num" relativePoint="BOTTOM" y="-6" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():DumpMap();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button parentKey="DumpExplorationButton" inherits="UIMenuButtonStretchTemplate" text="Map dump">
+				<Size x="120" y="24" />
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.num" relativePoint="BOTTOM" y="-6" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						self:GetParent():DumpExploration();
+					</OnClick>
+				</Scripts>
+			</Button>
+
+		</Frames>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+
+</Ui>
