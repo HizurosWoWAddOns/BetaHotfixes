@@ -106,6 +106,25 @@ worldmap[2345] = {{1,12,"earthenbatleground","earthenbattleground%d.blp"}};
 worldmap[2347] = {{1,12,"delve_nerubian_04","delve_nerubian_04a%d.blp"}};
 worldmap[2348] = {{1,12,"delve_zekvirslair_01","delve_zekvirslair_01_a%d.blp"}};
 
+if LOCALE_deDE then
+	ns.isGreen = {
+		[2213] = 1,[2216] = 1,[2249] = 1,[2250] = 1,
+		[2251] = 1,[2255] = 1,[2256] = 1,[2259] = 1,
+		[2269] = 1,[2270] = 1,[2277] = 1,[2291] = 1,
+		[2292] = 1,[2293] = 1,[2294] = 1,[2295] = 1,
+		[2296] = 1,[2298] = 1,[2299] = 1,[2300] = 1,
+		[2301] = 1,[2302] = 1,[2310] = 1,[2311] = 1,
+		[2312] = 1,[2314] = 1,[2328] = 1,[2343] = 1,
+		[2344] = 1,[2347] = 1,[2348] = 1,[2357] = 1,
+		[2358] = 1,[2359] = 1,
+	}
+else
+	ns.isGreen = {}
+	for k in pairs(worldmap) do
+		ns.isGreen[k]=1;
+	end
+end
+
 -- missing
 -- 2343 -- khaz algar / nerub'ar / city of threads
 
