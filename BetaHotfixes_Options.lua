@@ -159,8 +159,13 @@ function ns.Options_Init()
 				BetaHotfixDB.modules[modName] = {};
 			end
 			if reset and modData.options.new_build_reset then
-				for i,v in ipairs(modData.options.new_build_reset)do
-					BetaHotfixDB.modules[modName][v]=nil;
+				local t=type(modData.options.new_build_reset)
+				if t=="function" then
+					modData.options.new_build_reset();
+				elseif t=="table" then --?
+					for i,v in ipairs(modData.options.new_build_reset)do
+						BetaHotfixDB.modules[modName][v]=nil;
+					end
 				end
 			end
 			for k,v in pairs(modData.options.defaults)do

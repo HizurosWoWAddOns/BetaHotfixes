@@ -173,9 +173,13 @@ module = {
 		defaults = {
 			ferrymaster = false
 		},
-		new_build_reset = {
-			"ferrymaster"
-		}
+		new_build_reset = function()
+			for k, v in pairs(BetaHotfixDB.modules[modName])do
+				if k:match("greentexture%-uiMapId%-%d") then
+					BetaHotfixDB.modules[modName][k] = nil;
+				end
+			end
+		end
 	},
 }
 
@@ -194,7 +198,7 @@ function module.on_addoptions()
 				order = 10+count,
 			}
 			module.options.defaults[key] = false;
-			tinsert(module.options.new_build_reset,key);
+			--tinsert(module.options.new_build_reset,key);
 			count=count+1;
 		end
 		args.info.hidden = count~=0
@@ -208,14 +212,17 @@ function module.on_addoptions()
 	if #t>0 then
 		local args = module.options.hotfix.exploration.args;
 		for i=1, #t do
-			local info = C_Map.GetMapInfo(t[i]) or {name=UNKNOWN};
-			local key = "exploration-uiMapId-"..t[i]
-			args[key] = {
-				type = "toggle",
-				name = info.name
-			}
-			module.options.defaults[key] = false;
-			tinsert(module.options.new_build_reset,key);
+			if ns.isGreen[t[i]] then
+				local info = C_Map.GetMapInfo(t[i]) or {name=UNKNOWN};
+				local key = "exploration-uiMapId-"..t[i]
+				args[key] = {
+					type = "toggle",
+					name = info.name,
+					hidden = ns.isGreen[t[i]]==nil
+				}
+				module.options.defaults[key] = false;
+				tinsert(module.options.new_build_reset,key);
+			end
 		end
 	else
 		module.options.hotfix.exploration.disabled = true;
@@ -232,7 +239,6 @@ function module.PLAYER_LOGIN()
 	end
 	for k,v in pairs(BetaHotfixDB)do
 		if tostring(k):match("%-uiMapId%-") then
-			print("wfboiknwtbowqntboqeinrgoiqnergoiqnergoiqnrgoinerqb")
 			BetaHotfixDB.modules[modName][k] = v;
 			BetaHotfixDB[k] = nil
 		end
