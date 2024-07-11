@@ -1,12 +1,20 @@
 
 local addon, ns = ...;
-local L,C,module = ns.L,WrapTextInColorCode;
+local L,C,module = ns.L,WrapTextInColorCode,nil;
 if ns.interfaceVersion<90000 then return end
 
 local gsub = gsub
 local modName,label = "worldmap",WORLD_MAP; -- worldmap_hotfix
-local path,enabled = "Interface/AddOns/BetaHotfixes/media/WorldMap/";
+local path,enabled = "Interface/AddOns/BetaHotfixes/media/WorldMap/",false;
 local replaceTextures,replaceTaxiNodes = {},{};
+
+local function genTextureList(data)
+	local list = {}
+	for i=data[1], data[2] do
+		tinsert(list,path..data[3]..'/'..data[4]:format(i))
+	end
+	return list
+end
 
 local C_Map_GetMapArtLayerTextures_Orig = C_Map.GetMapArtLayerTextures;
 local function C_Map_GetMapArtLayerTextures_Replacement(mapID,layerIndex)
@@ -19,43 +27,34 @@ local function C_Map_GetMapArtLayerTextures_Replacement(mapID,layerIndex)
 			elseif replaceTextures[mapID][layerIndex]==nil then
 				replaceTextures[mapID][layerIndex] = {};
 			end
-			for i=data[1], data[2] do
-				tinsert(replaceTextures[mapID][layerIndex],path..data[3].."/"..data[4]:format(i));
-			end
+			replaceTextures[mapID][layerIndex] = genTextureList(data);
+			--for i=data[1], data[2] do
+			--	tinsert(replaceTextures[mapID][layerIndex],path..data[3].."/"..data[4]:format(i));
+			--end
 		end
 		if replaceTextures and replaceTextures[mapID] and replaceTextures[mapID][layerIndex] then
 			return replaceTextures[mapID][layerIndex];
 		end
 	end
 	return C_Map_GetMapArtLayerTextures_Orig(mapID,layerIndex);
-	--[[
-	if textures and textures[1] then
-		if BetaHotfixDB.modules[modName].boralus and mapID==1161 and #textures<150 then
-			local tmp = {};
-			for i=1, 150 do
-				tinsert(tmp,path.."boraluscity/boraluscity"..i);
-			end
-			textures = tmp;
-		elseif BetaHotfixDB.modules[modName].greentextures then
-			if ns.WorldMapData then
-				replaceTextures = ns.WorldMapData();
-				ns.WorldMapData = nil;
-			end
-			for i,id in pairs(textures) do
-				if replaceTextures[id] then
-					textures[i] = path..replaceTextures[id];
-				end
-			end
-		end
-	end
-	--return textures;
-	]]
 end
 C_Map.GetMapArtLayerTextures = C_Map_GetMapArtLayerTextures_Replacement;
 
 local C_MapExplorationInfo_GetExploredMapTextures_Orig = C_MapExplorationInfo.GetExploredMapTextures;
 local function C_MapExplorationInfo_GetExploredMapTextures_Replacement(mapID)
 	ns.print("hooked","C_MapExplorationInfo.GetExploredMapTextures");
+	local data = C_MapExplorationInfo_GetExploredMapTextures_Orig(mapID);
+	if BetaHotfixDB.modules[modName]["greenexploration-uiMapId-"..mapID] then
+		local eData = ns.ExplorationData(mapID)
+		if eData then
+			for explorationIndex, explorationInfo in ipairs(data) do
+				if eData[explorationIndex] then
+					data[explorationIndex].fileDataIDs = genTextureList(explorationInfo)
+				end
+			end
+		end
+	end
+	--[[
 	local data = C_MapExplorationInfo_GetExploredMapTextures_Orig(mapID);
 	if BetaHotfixDB.modules[modName].greentextures and data then
 		for areaIndex=1, #data do
@@ -68,6 +67,9 @@ local function C_MapExplorationInfo_GetExploredMapTextures_Replacement(mapID)
 			end
 		end
 	end
+	return data;
+	--]]
+
 	return data;
 end
 --C_MapExplorationInfo.GetExploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures_Replacement
@@ -214,14 +216,14 @@ function module.on_addoptions()
 		for i=1, #t do
 			if ns.isGreen[t[i]] then
 				local info = C_Map.GetMapInfo(t[i]) or {name=UNKNOWN};
-				local key = "exploration-uiMapId-"..t[i]
+				local key = "greenexploration-uiMapId-"..t[i]
 				args[key] = {
 					type = "toggle",
 					name = info.name,
 					hidden = ns.isGreen[t[i]]==nil
 				}
 				module.options.defaults[key] = false;
-				tinsert(module.options.new_build_reset,key);
+				--tinsert(module.options.new_build_reset,key);
 			end
 		end
 	else

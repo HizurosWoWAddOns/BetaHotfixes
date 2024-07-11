@@ -46,7 +46,7 @@ end
 -- WorldMap texture layers --
 -----------------------------
 
-
+--[[
 worldmap[2213] = {{1,150,"nerubar","nerubar%d.blp"}}; -- immer noch grün
 worldmap[2214] = {{1,150,"earthenworks","earthenworks%d.blp"}};
 worldmap[2215] = {{1,150,"arathorcanyons","arathorcanyons%d.blp"}};
@@ -105,8 +105,38 @@ worldmap[2344] = {{1,12,"cityofthreadsdungeon","cityofthreadsdungeon_b%d.blp"}};
 worldmap[2345] = {{1,12,"earthenbatleground","earthenbattleground%d.blp"}};
 worldmap[2347] = {{1,12,"delve_nerubian_04","delve_nerubian_04a%d.blp"}};
 worldmap[2348] = {{1,12,"delve_zekvirslair_01","delve_zekvirslair_01_a%d.blp"}};
+--]]
 
-if LOCALE_deDE then
+
+worldmap[2214] = {{1,150,"earthenworks","earthenworks%d.blp"}}
+worldmap[2248] = {{1,150,"isleofdorn","isleofdorn%d.blp"}}
+worldmap[2249] = {{1,12,"delve_fungarian_01","delve_fungarian_01a%d.blp"}}
+worldmap[2250] = {{1,12,"delve_kobolds_01","delve_kobolds_01a%d.blp"}}
+worldmap[2251] = {{1,12,"delve_kobolds_02","delve_kobolds_02a%d.blp"}}
+worldmap[2269] = {{1,12,"delve_earthcrawl_01","delve_earthcrawl_01a%d.blp"}}
+worldmap[2277] = {{1,12,"delve_nightfall_01","delve_nightfall_01a%d.blp"}}
+worldmap[2291] = {{1,12,"nerubianpalaceraid","nerubianpalaceraid_b%d.blp"}}
+worldmap[2292] = {{1,12,"nerubianpalaceraid","nerubianpalaceraid_a%d.blp"}}
+worldmap[2293] = {{1,12,"nerubianpalaceraid","nerubianpalaceraid_c%d.blp"}}
+worldmap[2294] = {{1,12,"nerubianpalaceraid","nerubianpalaceraid_d%d.blp"}}
+worldmap[2295] = {{1,12,"nerubianpalaceraid","nerubianpalaceraid_e%d.blp"}}
+worldmap[2296] = {{1,12,"nerubianpalaceraid","nerubianpalaceraid_f%d.blp"}}
+worldmap[2299] = {{1,12,"delve_evolvednerubian_01","delve_evolvednerubian_01a%d.blp"}}
+worldmap[2301] = {{1,12,"delve_kobyss_01","delve_kobyss_01a%d.blp"}}
+worldmap[2302] = {{1,12,"delve_nerubian_02","delve_nerubian_02a%d.blp"}}
+worldmap[2310] = {{1,12,"delve_skitteringbreach_01","delve_skitteringbreach_01a%d.blp"}}
+worldmap[2311] = {{1,150,"hallowfall_spreadinglight","hallowfall_spreadinglight%d.blp"}}
+worldmap[2314] = {{1,12,"delve_kobyss_02","delve_kobyss_02a%d.blp"}}
+worldmap[2328] = {{1,150,"khazalgar_proscenium","khazalgar_proscenium%d.blp"}}
+worldmap[2339] = {{1,150,"dornogal","dornogal%d.blp"}}
+worldmap[2343] = {{1,150,"nerubardungeon","nerubardungeon_a%d.blp"}}
+worldmap[2344] = {{1,12,"nerubardungeon","nerubardungeon_b%d.blp"}}
+worldmap[2347] = {{1,12,"delve_nerubian_04","delve_nerubian_04a%d.blp"}}
+worldmap[2348] = {{1,12,"delve_zekvirslair_01","delve_zekvirslair_01_a%d.blp"}}
+worldmap[2367] = {{1,12,"vaultofmemory","vaultofmemory%d.blp"}}
+
+
+--[[if LOCALE_deDE then
 	ns.isGreen = {
 		[2213] = 1,[2216] = 1,[2249] = 1,[2250] = 1,
 		[2251] = 1,[2255] = 1,[2256] = 1,[2259] = 1,
@@ -118,12 +148,12 @@ if LOCALE_deDE then
 		[2344] = 1,[2347] = 1,[2348] = 1,[2357] = 1,
 		[2358] = 1,[2359] = 1,
 	}
-else
+else]]
 	ns.isGreen = {}
 	for k in pairs(worldmap) do
 		ns.isGreen[k]=1;
 	end
-end
+--end
 
 -- missing
 -- 2343 -- khaz algar / nerub'ar / city of threads
