@@ -1,7 +1,7 @@
 
 local addon, ns = ...;
 local L,C,module = ns.L,WrapTextInColorCode;
-if ns.interfaceVersion<90000 then return end
+if ns.interfaceVersion<110000 then return end
 
 local modName,modLabel = "devtools",L.DevTools; -- GreenMapDumpLabel -- worldmap_dump
 local _C_Map_GetMapArtLayerTextures = C_Map.GetMapArtLayerTextures;
@@ -45,7 +45,7 @@ function BetaHotfixes_MapControls_Mixin:PrevMap()
 	if self.currentIndex==0 then
 		self.currentIndex = #uiMapIDs;
 	end
-	ns.debug(self.currentIndex,uiMapIDs[self.currentIndex]);
+	--ns.debug(self.currentIndex,uiMapIDs[self.currentIndex]);
 	WorldMapFrame:SetMapID(uiMapIDs[self.currentIndex]);
 end
 
@@ -54,7 +54,7 @@ function BetaHotfixes_MapControls_Mixin:NextMap()
 	if self.currentIndex>#uiMapIDs then
 		self.currentIndex = 1;
 	end
-	ns.debug(self.currentIndex,uiMapIDs[self.currentIndex]);
+	--ns.debug(self.currentIndex,uiMapIDs[self.currentIndex]);
 	WorldMapFrame:SetMapID(uiMapIDs[self.currentIndex]);
 end
 

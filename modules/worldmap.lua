@@ -1,79 +1,38 @@
 
 local addon, ns = ...;
 local L,C,module = ns.L,WrapTextInColorCode,nil;
-if ns.interfaceVersion<90000 then return end
+if ns.interfaceVersion<110000 then return end
 
 local gsub = gsub
 local modName,label = "worldmap",WORLD_MAP; -- worldmap_hotfix
-local path,enabled = "Interface/AddOns/BetaHotfixes/media/WorldMap/",false;
-local replaceTextures,replaceTaxiNodes = {},{};
-
-local function genTextureList(data)
-	local list = {}
-	for i=data[1], data[2] do
-		tinsert(list,path..data[3]..'/'..data[4]:format(i))
-	end
-	return list
-end
 
 local C_Map_GetMapArtLayerTextures_Orig = C_Map.GetMapArtLayerTextures;
 local function C_Map_GetMapArtLayerTextures_Replacement(mapID,layerIndex)
-	if BetaHotfixDB.modules[modName]["greentexture-uiMapId-"..mapID] then
-		local data = ns.WorldMapData(mapID,layerIndex);
-		ns.print("hooked","C_Map.GetMapArtLayerTextures",mapID,layerIndex,data);
-		if data then
-			if replaceTextures[mapID]==nil then
-				replaceTextures[mapID] = {[layerIndex]={}};
-			elseif replaceTextures[mapID][layerIndex]==nil then
-				replaceTextures[mapID][layerIndex] = {};
-			end
-			replaceTextures[mapID][layerIndex] = genTextureList(data);
-			--for i=data[1], data[2] do
-			--	tinsert(replaceTextures[mapID][layerIndex],path..data[3].."/"..data[4]:format(i));
-			--end
-		end
-		if replaceTextures and replaceTextures[mapID] and replaceTextures[mapID][layerIndex] then
-			return replaceTextures[mapID][layerIndex];
+	local data = C_Map_GetMapArtLayerTextures_Orig(mapID,layerIndex);
+	if BetaHotfixDB.modules[modName]["green-worldmap"] then
+		for i,id in ipairs(data) do
+			data[i] = ns.GetTextureReplacement(id);
 		end
 	end
-	return C_Map_GetMapArtLayerTextures_Orig(mapID,layerIndex);
+	return data;
 end
 C_Map.GetMapArtLayerTextures = C_Map_GetMapArtLayerTextures_Replacement;
 
 local C_MapExplorationInfo_GetExploredMapTextures_Orig = C_MapExplorationInfo.GetExploredMapTextures;
 local function C_MapExplorationInfo_GetExploredMapTextures_Replacement(mapID)
-	ns.print("hooked","C_MapExplorationInfo.GetExploredMapTextures");
-	local data = C_MapExplorationInfo_GetExploredMapTextures_Orig(mapID);
-	if BetaHotfixDB.modules[modName]["greenexploration-uiMapId-"..mapID] then
-		local eData = ns.ExplorationData(mapID)
-		if eData then
-			for explorationIndex, explorationInfo in ipairs(data) do
-				if eData[explorationIndex] then
-					data[explorationIndex].fileDataIDs = genTextureList(explorationInfo)
-				end
+	local replacement,data = nil,C_MapExplorationInfo_GetExploredMapTextures_Orig(mapID);
+	if BetaHotfixDB.modules[modName]["green-exploration"] then
+		for explorationIndex, explorationInfo in ipairs(data) do
+			for i,id in ipairs(explorationInfo.fileDataIDs) do
+				explorationInfo.fileDataIDs[i] = ns.GetTextureReplacement(id);
 			end
 		end
 	end
-	--[[
-	local data = C_MapExplorationInfo_GetExploredMapTextures_Orig(mapID);
-	if BetaHotfixDB.modules[modName].greentextures and data then
-		for areaIndex=1, #data do
-			if data[areaIndex].fileDataIDs and data[areaIndex].fileDataIDs[1] then
-				for i,id in pairs(data[areaIndex].fileDataIDs) do
-					if replaceTextures[id] then
-						data[areaIndex].fileDataIDs[i] = path..replaceTextures[id];
-					end
-				end
-			end
-		end
-	end
-	return data;
-	--]]
-
 	return data;
 end
---C_MapExplorationInfo.GetExploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures_Replacement
+C_MapExplorationInfo.GetExploredMapTextures = C_MapExplorationInfo_GetExploredMapTextures_Replacement
 
+--[[
 local C_TaxiMap_GetTaxiNodesForMap_Orig = C_TaxiMap.GetTaxiNodesForMap;
 local function C_TaxiMap_GetTaxiNodesForMap_Replacement(...)
 	ns.print("hooked","C_TaxiMap.GetTaxiNodesForMap");
@@ -91,6 +50,7 @@ local function C_TaxiMap_GetTaxiNodesForMap_Replacement(...)
 	return taxinodes;
 end
 --C_TaxiMap.GetTaxiNodesForMap = C_TaxiMap_GetTaxiNodesForMap_Replacement
+--]]
 
 local function opt(info,value)
 	local key = info[#info];
@@ -117,8 +77,6 @@ end
 
 module = {
 	label = label,
-	--get=opt,
-	--set=opt,
 	options = {
 		hotfix = {
 			header1 = {
@@ -129,8 +87,16 @@ module = {
 				type = "description", order=2, fontSize="medium",
 				name = L.GreenTextureDesc
 			},
+			["green-worldmap"] = {
+				type = "toggle", order = 3,
+				name = L["Fix green Worldmap"]
+			},
+			["green-exploration"] = {
+				type = "toggle", order = 3,
+				name = L["Fix green Exploration areas"]
+			},
 			worldmap = {
-				type="group", order=3, inline=true,
+				type="group", order=3, inline=true, hidden=true,
 				name=C(WORLD_MAP,"ffeedd00"),
 				get = opt,
 				set = opt,
@@ -147,8 +113,10 @@ module = {
 				}
 			},
 			exploration = {
-				type="group", order=4, inline=true,
+				type="group", order=4, inline=true, hidden=true,
 				name=L.Exploration,desc=C(L.ExplorationDesc,"ffeedd00"),
+				get = opt,
+				set = opt,
 				args = {
 					info = {
 						type = "description", order = 0, fontSize="large",
@@ -157,36 +125,25 @@ module = {
 					-- filled by function
 				}
 			},
-			--[[
-			header2 = {
-				type = "header", order=5,
-				name = L.IconReplacements
-			},
-			desc2 = {
-				type = "description", order=6,
-				name = L.IconReplacementsDesc
-			}
-			ferrymaster = {
-				type="toggle", order=7, width="full", descStyle="inline",
-				name=L.WorldMapFerryMaster,desc=C(L.WorldMapFerryMasterDesc,"ffeedd00")
-			},
-			--]]
 		},
 		defaults = {
-			ferrymaster = false
 		},
 		new_build_reset = function()
+			local n
 			for k, v in pairs(BetaHotfixDB.modules[modName])do
-				if k:match("greentexture%-uiMapId%-%d") then
+				n = k:match("green(%s*)%-uiMapId%-%d")
+				if n=="texture" or n=="exploration" then
 					BetaHotfixDB.modules[modName][k] = nil;
 				end
 			end
+			BetaHotfixDB.modules[modName]["green-worldmap"] = nil;
+			BetaHotfixDB.modules[modName]["green-exploration"] = nil;
 		end
 	},
 }
 
 function module.on_addoptions()
-	ns.debug("?","worldmap","add-option");
+	--ns.debug("?","worldmap","add-option");
 	local t = ns.GetWorldMapIDs();
 	if #t>0 then
 		local args = module.options.hotfix.worldmap.args;
@@ -197,10 +154,9 @@ function module.on_addoptions()
 			args[key] = {
 				type = "toggle",
 				name = info.name,
-				order = 10+count,
+				order = 10
 			}
 			module.options.defaults[key] = false;
-			--tinsert(module.options.new_build_reset,key);
 			count=count+1;
 		end
 		args.info.hidden = count~=0
@@ -213,6 +169,11 @@ function module.on_addoptions()
 	local t = ns.GetExplorationMapIDs();
 	if #t>0 then
 		local args = module.options.hotfix.exploration.args;
+		local order = {}
+		for i=1, #t do
+			local info = C_Map.GetMapInfo(t[i]) or {name=UNKNOWN};
+			tinsert(order,info.name)
+		end
 		for i=1, #t do
 			if ns.isGreen[t[i]] then
 				local info = C_Map.GetMapInfo(t[i]) or {name=UNKNOWN};
@@ -223,16 +184,12 @@ function module.on_addoptions()
 					hidden = ns.isGreen[t[i]]==nil
 				}
 				module.options.defaults[key] = false;
-				--tinsert(module.options.new_build_reset,key);
 			end
 		end
 	else
 		module.options.hotfix.exploration.disabled = true;
 	end
 
-	--if ns.CountTaxiNodes()==0 then
-	--	module.options.hotfix.ferrymaster.disabled = true;
-	--end
 end
 
 function module.PLAYER_LOGIN()
@@ -256,8 +213,6 @@ function module.on_toggle(optName,showDisabled)
 		label = "WorldMapGreenTexture";
 	elseif key=="exploration" and id then
 		label = "ExplorationGreenTexture";
-	elseif optName=="ferrymaster" then
-		label = "WorldMapFerryMaster";
 	end
 	if label and (showDisabled or BetaHotfixDB.modules[modName][optName]) then
 		ns.print_status(L[label],BetaHotfixDB.modules[modName][optName]);
