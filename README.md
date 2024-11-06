@@ -8,6 +8,9 @@
 [![Paypal](https://img.shields.io/badge/&zwj;-Paypal-gray?logo=paypal&color=blue&style=flat-square)](https://paypal.me/hizuro)
 ![Sponsors](https://img.shields.io/github/sponsors/HizurosWoWAddOns?logo=github&style=flat-square)
 
+## Development temporarily discontinued
+We see us to the next beta for WoW Mitnight 2026. :-) 
+
 ## Description
 Temporary fix for some problems with the user interface in the current WoW Beta.\
 The main reason for this addon was the lack of textures for world maps if wow beta is set to another language. The hell of the green world map.
